@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import subprocess, json, os
+import subprocess, json, os, schedule, time, threading
 from datetime import datetime
 
 
@@ -23,6 +23,9 @@ def sftp_xfer():
     source_sftp = config["source_sftp"]
     destination_sftp = config["destination_sftp"]
 
+    pulling_data_from_label.config(text=f"source: {source_sftp['hostname']}")
+    pushing_data_to_label.config(text=f"destination: {destination_sftp['hostname']}")
+
     download_from_sftp(**source_sftp)
 
     upload_to_sftp(**destination_sftp)
@@ -34,7 +37,6 @@ def sftp_xfer():
 def run_script():
     try:
         sftp_xfer()
-        messagebox.showinfo("Success", "Script executed successfully!")
         update_last_run_time_label()
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
@@ -42,9 +44,24 @@ def run_script():
 def update_last_run_time_label():
     last_run_time_label.config(text=f"Last run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+def schedule_script_execution(interval_minutes):
+    schedule.every(interval_minutes).minutes.do(run_script)
+
+    def run_continuously():
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+
+    # Start a separate thread to run the schedule continuously
+    thread = threading.Thread(target=run_continuously)
+    thread.start()
+
 # Create the main application window
 root = tk.Tk()
 root.title("SFTP Automation")
+root.iconbitmap("bluegrass_arrows.ico")
+
 
 # Set minimum window width and height
 root.minsize(350, 200)
@@ -53,9 +70,17 @@ root.minsize(350, 200)
 run_button = tk.Button(root, text="Transfer Files", command=run_script)
 run_button.pack(pady=10)
 
+pulling_data_from_label = tk.Label(root, text="")
+pulling_data_from_label.pack()
+
+pushing_data_to_label = tk.Label(root, text="")
+pushing_data_to_label.pack()
+
 # Create a label to display the last run time
 last_run_time_label = tk.Label(root, text="")
 last_run_time_label.pack()
+
+schedule_script_execution(interval_minutes=3)
 
 # Run the Tkinter event loop
 root.mainloop()
