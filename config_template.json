@@ -5,7 +5,7 @@
         "username": "source_username",
         "password": "source_password",
         "remote_path": "/remote/source/directory",
-        "local_path": "/local/destination/directory"
+        "local_path": "source_files"
     },
     "destination_sftp": {
         "hostname": "destination.example.com",
@@ -13,6 +13,6 @@
         "username": "destination_username",
         "password": "destination_password",
         "remote_path": "/remote/destination/directory",
-        "local_path": "/local/source/directory"
+        "local_path": "source_files"
     }
 }
