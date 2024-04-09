@@ -1,3 +1,4 @@
+# written by Kipland Melton @ Bluegrass Supply Chain Services @ kmelton@bsc3pl.com
 import tkinter as tk
 from tkinter import messagebox
 import subprocess, json, os, schedule, time, threading
@@ -62,7 +63,6 @@ root = tk.Tk()
 root.title("SFTP Automation")
 root.iconbitmap("bluegrass_arrows.ico")
 
-
 # Set minimum window width and height
 root.minsize(350, 200)
 
@@ -70,9 +70,11 @@ root.minsize(350, 200)
 run_button = tk.Button(root, text="Transfer Files", command=run_script)
 run_button.pack(pady=10)
 
+# Display the source SFTP server
 pulling_data_from_label = tk.Label(root, text="")
 pulling_data_from_label.pack()
 
+# Display the destination SFTP server
 pushing_data_to_label = tk.Label(root, text="")
 pushing_data_to_label.pack()
 
