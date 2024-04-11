@@ -1,15 +1,31 @@
 # written by Kipland Melton @ Bluegrass Supply Chain Services @ kmelton@bsc3pl.com
 import tkinter as tk
 from tkinter import messagebox
-import subprocess, json, os, schedule, time, threading
+import subprocess, json, os, schedule, time, threading, random, string, shutil
 from datetime import datetime
 
+def generate_random_suffix():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
 def download_from_sftp(hostname, port, username, password, remote_path, local_path):
+    # Construct local filename without the random suffix
+    local_filename = os.path.join(local_path, "testsamefile.txt")
+
+    # Generate random file suffix for backup
+    random_suffix = generate_random_suffix()
+
+    # Construct backup filename with the random suffix
+    backup_filename = os.path.join('backups', f"testsamefile_{random_suffix}.txt")
+
+    # RUN WINSCP FILE DOWNLOAD
     command = f'"C:\\Program Files (x86)\\WinSCP\\WinSCP.com" /command "open sftp://{username}:{password}@{hostname}:{port}" "get {remote_path} {local_path}" "exit"'
     subprocess.run(command, shell=True)
 
+    # Copy newly downloaded file with suffix to backups folder
+    shutil.copy(local_filename, backup_filename)
+
 def upload_to_sftp(hostname, port, username, password, local_path, remote_path):
+    # RUN WINSCP FILE UPLOAD
     command = f'"C:\\Program Files (x86)\\WinSCP\\WinSCP.com" /command "open sftp://{username}:{password}@{hostname}:{port}" "put {local_path} {remote_path}" "exit"'
     subprocess.run(command, shell=True)
 
@@ -30,8 +46,6 @@ def sftp_xfer():
     download_from_sftp(**source_sftp)
 
     upload_to_sftp(**destination_sftp)
-
-
 
 """ GUI CODE """
 
@@ -80,7 +94,7 @@ pushing_data_to_label.pack()
 
 # Create a label to display the last run time
 last_run_time_label = tk.Label(root, text="")
-last_run_time_label.pack()
+last_run_time_label.pack(pady=30)
 
 schedule_script_execution(interval_minutes=3)
 
