@@ -1,22 +1,18 @@
 # written by Kipland Melton @ Bluegrass Supply Chain Services @ kmelton@bsc3pl.com
 import tkinter as tk
 from tkinter import messagebox
-import subprocess, json, os, schedule, time, threading, random, string, shutil
+import subprocess, json, os, schedule, time, threading, shutil
 from datetime import datetime
 
-def generate_random_suffix():
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-
 def download_from_sftp(hostname, port, username, password, remote_path, local_path):
-    # Construct local filename without the random suffix
+    # Construct local filename
     local_filename = os.path.join(local_path, "testsamefile.txt")
 
-    # seeing if my commits will show
-    # Generate random file suffix for backup
-    random_suffix = generate_random_suffix()
+    # creating date stamp to build backup file copy
+    date_stamp = datetime.now().strftime('%Y-%m-%d--%Hh%Mm%Ss')
 
-    # Construct backup filename with the random suffix
-    backup_filename = os.path.join('backups', f"testsamefile_{random_suffix}.txt")
+    # Construct backup filename with date and time stamp
+    backup_filename = os.path.join('backups', f"testsamefile_{date_stamp}.txt")
 
     # RUN WINSCP FILE DOWNLOAD
     command = f'"C:\\Program Files (x86)\\WinSCP\\WinSCP.com" /command "open sftp://{username}:{password}@{hostname}:{port}" "get {remote_path} {local_path}" "exit"'
